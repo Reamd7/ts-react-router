@@ -51,8 +51,10 @@
   "devDependencies": {
     "@types/jest": "^23.3.1",
     "@types/node": "^10.5.6",
+    "@types/path-to-regexp": "^1.7.0",
     "@types/react": "^16.4.7",
     "@types/react-dom": "^16.0.6",
+    "path-to-regexp": "^2.2.1",
     "typescript": "^3.0.1"
   },
   "jest": {
@@ -95,7 +97,7 @@
     ],
     "globals": {
       "ts-jest": {
-        "tsConfigFile": "E:\\antd-demo-ts\\tsconfig.test.json"
+        "tsConfigFile": "E:\\ts-router\\tsconfig.test.json"
       }
     }
   },
