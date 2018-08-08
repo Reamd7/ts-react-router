@@ -32,16 +32,16 @@ const KNOWN_STATICS:{
     arity: true
 };
 
-const TYPE_STATICS = {
-    [ReactIs.ForwardRef]: {
-        ['$$typeof']: true,
-        render: true
-    }
-};
+// const TYPE_STATICS = {
+//     [ReactIs.ForwardRef]: {
+//         ['$$typeof']: true,
+//         render: true
+//     }
+// };
 
 const defineProperty = Object.defineProperty;
 const getOwnPropertyNames = Object.getOwnPropertyNames;
-const getOwnPropertySymbols = Object.getOwnPropertySymbols;
+// const getOwnPropertySymbols = Object.getOwnPropertySymbols;
 const getOwnPropertyDescriptor = Object.getOwnPropertyDescriptor;
 const getPrototypeOf = Object.getPrototypeOf;
 const objectPrototype = Object.prototype;

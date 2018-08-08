@@ -1,48 +1,6 @@
 import * as React from "react";
-// export default function $Context<ContextType>(defaultValue: any = {}) {
-//   const $ = React.createContext<any>({ data: defaultValue, ref: null });
-//   interface RouteContext {
-//     data: ContextType;
-//     ref: React.Component<ContextProp, RouteContext>;
-//   }
-//   interface ContextProp {
-//     value?: ContextType;
-//     children?: React.ReactNode;
-//     ref?: (ref: Context) => void;
-//   }
-//   class Context extends React.Component<ContextProp, RouteContext> {
-//     static Consumer: React.Consumer<RouteContext> = $.Consumer;
-//     public state: RouteContext;
-//     constructor(props: ContextProp) {
-//       super(props);
-//       this.state = {
-//         data: props.value || defaultValue,
-//         ref: this
-//       };
-//       this.props.ref && this.props.ref(this);
-//     }
-//     public get data() {
-//       return this.state.data;
-//     }
-//     public set data(value: ContextType) {
-//       this.setState({
-//         data: value,
-//         ref: this
-//       });
-//     }
-//     render() {
-//       if (this.props.children) {
-//         return (
-//           <$.Provider value={this.state}>{this.props.children}</$.Provider>
-//         );
-//       } else {
-//         return <$.Provider value={this.state} />;
-//       }
-//     }
-//   }
-//   return Context;
-// }
-// //=====================================
+import "proxy-polyfill"
+
 import { Imatch } from "../matchPath";
 import * as H from "history";
 export interface IContextType {
@@ -55,7 +13,7 @@ export interface IContextType {
     staticContext?: {
       url?: string;
       action?: "PUSH" | "REPLACE";
-      location?: object;
+      location?: H.Location;
       statusCode?: number;
     };
   };
@@ -64,25 +22,19 @@ const defaultValue = {};
 const $ = React.createContext<any>({ data: defaultValue, ref: null });
 export interface IRouteContext {
   data: IContextType;
-  ref: React.Component<IContextProp, IRouteContext>;
+  ref: Context;
 }
-interface IContextProp {
+interface IContextProp extends React.Props<Context>{
   value: IContextType;
-  children?: React.ReactNode;
-  ref?: (ref: Context) => void;
 }
 export class Context extends React.Component<IContextProp, IRouteContext> {
   static Consumer: React.Consumer<IRouteContext> = $.Consumer;
+  public props:IContextProp;
   public state: IRouteContext = {
-    data: this.props.value,
-    ref: this
-  };
-  public constructor(props: IContextProp) {
-    super(props);
-    if (this.props.ref){
-        this.props.ref(this);
-    }
+    data:this.props.value,
+    ref:this
   }
+
   public get data() {
     return this.state.data;
   }
@@ -95,6 +47,19 @@ export class Context extends React.Component<IContextProp, IRouteContext> {
   public update = (value: IContextType) => {
     this.data = value;
   };
+  public shouldComponentUpdate(nextProps:IContextProp,nextState:IRouteContext){
+    const isPropsUpdate = (nextProps !== this.props);
+    if (isPropsUpdate){
+      if (nextProps.value === nextState.data){
+        return false
+      }else{
+        nextState.data = nextProps.value!; // 这一句话是有副作用的，会整体替代nextState.data 的 OBJ , 所以使得 data 对象是动态的。
+        return true
+      }
+    }
+    const isStateUpdate = (nextState !== this.state);
+    return (isStateUpdate);
+  }
   public render() {
     if (this.props.children) {
       return <$.Provider value={this.state}>{this.props.children}</$.Provider>;
