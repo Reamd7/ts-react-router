@@ -3,7 +3,6 @@ import * as ReactDOM from "react-dom";
 import Router from "../Router";
 import { createMemoryHistory as createHistory } from "history";
 import { IRouteContext , Context } from '../context';
-
 describe("A <Router>", () => {
   const node = document.createElement("div");
 
@@ -49,11 +48,11 @@ describe("A <Router>", () => {
   });
 
   describe("context", () => {
-    let rootContext!:IRouteContext | undefined; // TODO
+    let rootContext!:IRouteContext["data"]|undefined; // TODO
     const ContextChecker = () => {
       return (<Context.Consumer>
         {(context:IRouteContext)=>{
-          rootContext = context; 
+          rootContext = context.data; 
           return null
         }}
       </Context.Consumer>);
@@ -69,17 +68,17 @@ describe("A <Router>", () => {
       rootContext = undefined;
     });
 
-    it("puts history on context.history", () => {
-      const history = createHistory();
-      ReactDOM.render(
-        <Router history={history}>
-          <ContextChecker />
-        </Router>,
-        node
-      );
+    // it("puts history on context.history", () => {
+    //   const history = createHistory();
+    //   ReactDOM.render(
+    //     <Router history={history}>
+    //       <ContextChecker />
+    //     </Router>,
+    //     node
+    //   );
 
-      // expect(rootContext!.router.history).toBe(history); // TODO
-    });
+    //   expect(rootContext!.router.history).toBe(history); // TODO
+    // });
 
     it("sets context.router.route at the root", () => {
       const history = createHistory({
@@ -92,38 +91,34 @@ describe("A <Router>", () => {
         </Router>,
         node
       );
-      const Data = rootContext!.data
-      expect(Data.router.route.match.path).toEqual("/");// TODO
-      expect(Data.router.route.match.url).toEqual("/");// TODO
-      expect(Data.router.route.match.params).toEqual({});// TODO
-      expect(Data.router.route.match.isExact).toEqual(true);// TODO
-      expect(Data.router.route.location).toEqual(history.location);// TODO
+
+      expect(rootContext!.router.route.match.path).toEqual("/");// TODO
+      expect(rootContext!.router.route.match.url).toEqual("/");// TODO
+      expect(rootContext!.router.route.match.params).toEqual({});// TODO
+      expect(rootContext!.router.route.match.isExact).toEqual(true);// TODO
+      expect(rootContext!.router.route.location).toEqual(history.location);// TODO
     });
 
     it("updates context.router.route upon navigation", () => {
       const history = createHistory({
         initialEntries: ["/"]
       });
-      let RouterRef!:Router
-
+      let RouterRef!:Router;
       ReactDOM.render(
         <Router ref={(ref:Router)=>{
-          RouterRef = ref;
+          RouterRef = ref
         }} history={history}>
           <ContextChecker />
         </Router>,
         node
       );
 
-      expect(rootContext!.data.router.route.match.isExact).toBe(true);// TODO
+      expect(rootContext!.router.route.match.isExact).toBe(true);// TODO
+
       const newLocation = { pathname: "/new" };
-      RouterRef.history.push(newLocation);  
-      
-      // 这里的实现了直接从外部属性修改了内部组件的props 并且因为违反props readonly 的 规定，使得代码容易不可控制。
-      // 若希望能够 代理 history 对象进行修改的话，不如对所有Router 都内置history 修改的方法。
-      // 而且我是真的想不到怎么能够实现不违背readonly 修改props 
-      
-      expect(rootContext!.data.router.route.match.isExact).toBe(false);// TODO
+      RouterRef.history.push(newLocation);
+
+      expect(rootContext!.router.route.match.isExact).toBe(false);// TODO
     });
 
     it("does not contain context.router.staticContext by default", () => {
@@ -137,8 +132,8 @@ describe("A <Router>", () => {
         </Router>,
         node
       );
-      const Data = rootContext!.data
-      expect(Data.router.staticContext).toBe(undefined);// TODO
+
+      expect(rootContext!.router.staticContext).toBe(undefined);// TODO
     });
   });
 });

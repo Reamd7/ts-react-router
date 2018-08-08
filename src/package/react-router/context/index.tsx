@@ -50,10 +50,10 @@ export class Context extends React.Component<IContextProp, IRouteContext> {
   public shouldComponentUpdate(nextProps:IContextProp,nextState:IRouteContext){
     const isPropsUpdate = (nextProps !== this.props);
     if (isPropsUpdate){
-      if (nextProps.value === nextState.data){
+      if (nextProps.value.router === nextState.data.router){
         return false
       }else{
-        nextState.data = nextProps.value!; // 这一句话是有副作用的，会整体替代nextState.data 的 OBJ , 所以使得 data 对象是动态的。
+        nextState.data.router = nextProps.value.router;
         return true
       }
     }

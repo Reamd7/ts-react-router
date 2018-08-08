@@ -91,17 +91,19 @@ class Router extends React.Component<IRouterProps, IRouterState> {
 				const el = target[props];
 				if (props === "push" || props === "replace"){
 					return (function(this:Router){
-						el.apply(target,arguments);
+						el.apply(this.history,arguments);
 						const location = target.location
 						const match = computeMatch(location.pathname);
-						this.setState({
-							match: match,
-							context: {
-								router: {
-									history: target,
-									route: {
-										location: location,
-										match: match
+						this.setState(()=>{
+							return {
+								match: match,
+								context: {
+									router: {
+										history: target,
+										route: {
+											location: location,
+											match: match
+										}
 									}
 								}
 							}
