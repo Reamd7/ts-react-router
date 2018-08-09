@@ -50,6 +50,7 @@ export class Context extends React.Component<IContextProp, IRouteContext> {
   public shouldComponentUpdate(nextProps:IContextProp,nextState:IRouteContext){
     const isPropsUpdate = (nextProps !== this.props);
     if (isPropsUpdate){
+
       if (nextProps.value.router === nextState.data.router){
         return false
       }else{
@@ -60,8 +61,10 @@ export class Context extends React.Component<IContextProp, IRouteContext> {
     const isStateUpdate = (nextState !== this.state);
     return (isStateUpdate);
   }
-  public render() {
+  public render() { 
     if (this.props.children) {
+      console.log(this.state)
+      console.log(Object.is(this.state,((window as any).context)));
       return <$.Provider value={this.state}>{this.props.children}</$.Provider>;
     } else {
       return <$.Provider value={this.state} />;

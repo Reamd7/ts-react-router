@@ -10,14 +10,18 @@ import * as H from "history"
 //   keyLength?: number;
 // }
 
-export type MemoryRouterProps = H.MemoryHistoryBuildOptions
+export type MemoryRouterProps = H.MemoryHistoryBuildOptions & {
+  ins?:(ref:Router)=>void
+}
 /**
  * The public API for a <Router> that stores location in memory.
  */
-class MemoryRouter extends React.Component<MemoryRouterProps & React.Props<Router>, any> {
+class MemoryRouter extends React.Component<MemoryRouterProps, any> {
 
   public history = createHistory(this.props);
-
+  constructor(props:MemoryRouterProps){
+    super(props)
+  }
   // componentWillMount() {
   //   warning(
   //     !this.props.history,
@@ -25,9 +29,14 @@ class MemoryRouter extends React.Component<MemoryRouterProps & React.Props<Route
   //       "use `import { Router }` instead of `import { MemoryRouter as Router }`."
   //   );
   // }
-
+  public hello(){}
   render() {
-    return <Router ref={this.props.ref} history={this.history} children={this.props.children} />;
+    if (this.props.ins){
+      return <Router ins={this.props.ins} history={this.history} children={this.props.children} />;
+    }else{
+      return <Router history={this.history} children={this.props.children} />;
+    }
+    
   }
 }
 

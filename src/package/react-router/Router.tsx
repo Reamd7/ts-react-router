@@ -6,6 +6,7 @@ import { Imatch } from "./matchPath";
 
 interface IRouterProps extends React.Props<any> {
 	history: H.History;
+	ins?:(ref:Router)=>void;
 }
 interface IRouterState {
 	match: Imatch<any>;
@@ -45,7 +46,7 @@ class Router extends React.Component<IRouterProps, IRouterState> {
 	
 	public constructor(props: IRouterProps) {
 		super(props);
-
+		if (this.props.ins){ this.props.ins(this); }
 		const { children, history } = props;
 
 		// ============= this.history =================	
@@ -92,14 +93,25 @@ class Router extends React.Component<IRouterProps, IRouterState> {
 				if (props === "push" || props === "replace"){
 					return (function(this:Router){
 						el.apply(this.history,arguments);
-						const location = target.location
+						const location = this.history.location
 						const match = computeMatch(location.pathname);
+						// this.ContextRef.update({
+						// 	router: {
+						// 		...this.ContextRef.data.router,
+						// 		history: target,
+						// 		route: {
+						// 			location: location,
+						// 			match: match
+						// 		}
+						// 	}
+						// });
 						this.setState(()=>{
+							console.log("Router Update")
 							return {
 								match: match,
 								context: {
 									router: {
-										history: target,
+										history: this.history,
 										route: {
 											location: location,
 											match: match
