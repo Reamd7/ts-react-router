@@ -14,7 +14,9 @@ export type MemoryRouterProps = H.MemoryHistoryBuildOptions
 /**
  * The public API for a <Router> that stores location in memory.
  */
-class MemoryRouter extends React.Component<MemoryRouterProps & React.Props<Router>, any> {
+class MemoryRouter extends React.Component<MemoryRouterProps & {
+  ins?:(ref:Router)=>void
+}, any> {
 
   public history = createHistory(this.props);
 
@@ -27,7 +29,7 @@ class MemoryRouter extends React.Component<MemoryRouterProps & React.Props<Route
   // }
 
   render() {
-    return <Router ref={this.props.ref} history={this.history} children={this.props.children} />;
+    return <Router ins={this.props.ins} history={this.history} children={this.props.children} />;
   }
 }
 

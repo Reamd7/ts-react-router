@@ -6,10 +6,10 @@ import { Imatch } from "./matchPath";
 
 interface IRouterProps extends React.Props<any> {
 	history: H.History;
+	ins?:(ref:Router)=>void
 }
 interface IRouterState {
 	match: Imatch<any>;
-	context: IContextType;
 }
 export interface IRouterChildContext<P> {
 	router: {
@@ -42,30 +42,32 @@ class Router extends React.Component<IRouterProps, IRouterState> {
 
 	public ContextRef!: Context; // 组件实例化之后才有
 	public history: H.History;
-	
+	public initContext:IContextType; // 初始化 Context
+
 	public constructor(props: IRouterProps) {
 		super(props);
-
-		const { children, history } = props;
-
+		if (this.props.ins){
+			this.props.ins(this)
+		}
 		// ============= this.history =================	
-		this.InitHistory(history)
+		this.InitHistory(props.history)
 		// ============= this.state =================	
-		const match = computeMatch(this.history.location.pathname);
+		const history = this.history
+		const match = computeMatch(history.location.pathname);
 		this.state = {
 			match: match,
-			context: {
-				router: {
-					history: this.history,
-					route: {
-						location: this.history.location,
-						match: match
-					}
+		};
+		this.initContext = {
+			router: {
+				history: history,
+				route: {
+					location: history.location,
+					match: match
 				}
 			}
-		};
+		}
 		// ========= $componentWillMount ========
-
+		const children = props.children;
 		invariant(
 			children == null || React.Children.count(children) === 1,
 			"A <Router> may have only one child element"
@@ -74,7 +76,7 @@ class Router extends React.Component<IRouterProps, IRouterState> {
 		// Do this here so we can setState when a <Redirect> changes the
 		// location in componentWillMount. This happens e.g. when doing
 		// server rendering using a <StaticRouter>.
-		this.unlisten = this.history.listen(() => {
+		this.unlisten = history.listen(() => {
 			this.setState({
 				...this.state,
 				match: computeMatch(this.history.location.pathname)
@@ -91,23 +93,21 @@ class Router extends React.Component<IRouterProps, IRouterState> {
 				const el = target[props];
 				if (props === "push" || props === "replace"){
 					return (function(this:Router){
-						el.apply(this.history,arguments);
-						const location = target.location
+						const history = this.history;
+						el.apply(history,arguments);
+
+						const location = history.location;
 						const match = computeMatch(location.pathname);
-						this.setState(()=>{
-							return {
-								match: match,
-								context: {
-									router: {
-										history: target,
-										route: {
-											location: location,
-											match: match
-										}
-									}
+						this.ContextRef.update({
+							router: {
+								history: history,
+								route: {
+									location: location,
+									match: match
 								}
 							}
 						});
+						// this.state.match = match // 预留
 					}).bind(this)
 				}else{
 					return el
@@ -120,14 +120,14 @@ class Router extends React.Component<IRouterProps, IRouterState> {
 
 		if (children) {
 			return (
-				<Context value={this.state.context} ref={(context: Context) => {
+				<Context value={this.initContext} ref={(context: Context) => {
 						this.ContextRef = context;
 					}}
 				>{children}</Context>
 			);
 		} else {
 			return (
-				<Context value={this.state.context} ref={(context: Context) => {
+				<Context value={this.initContext} ref={(context: Context) => {
 						this.ContextRef = context;
 					}} />
 			);
@@ -140,16 +140,19 @@ class Router extends React.Component<IRouterProps, IRouterState> {
 		);
 		// 更新 Context , 本质上和以前的 getChildContext 等价
 		this.InitHistory(nextProps.history)
+		const history = this.history;
+		const location = history.location;
+		const match = computeMatch(location.pathname);
 		this.ContextRef.update({
 			router: {
-				...this.ContextRef.data.router,
-				history: this.history,
+				history: history,
 				route: {
-					location: this.history.location,
-					match: computeMatch(this.history.location.pathname)
+					location: location,
+					match: match
 				}
 			}
 		});
+		// this.state.match = match // 预留
 	} 
 	public componentWillUnmount() {
 		this.unlisten();

@@ -48,15 +48,15 @@ export class Context extends React.Component<IContextProp, IRouteContext> {
     this.data = value;
   };
   public shouldComponentUpdate(nextProps:IContextProp,nextState:IRouteContext){
-    const isPropsUpdate = (nextProps !== this.props);
-    if (isPropsUpdate){
-      if (nextProps.value.router === nextState.data.router){
-        return false
-      }else{
-        nextState.data.router = nextProps.value.router;
-        return true
-      }
-    }
+    // const isPropsUpdate = (nextProps !== this.props);
+    // if (isPropsUpdate){
+    //   if (nextProps.value.router === nextState.data.router){
+    //     return false
+    //   }else{
+    //     nextState.data.router = nextProps.value.router;
+    //     return true
+    //   }
+    // } // 因为Context 集中到使用Context 内部方法进行修改所以直接删除propsUpdate 的可能性
     const isStateUpdate = (nextState !== this.state);
     return (isStateUpdate);
   }
