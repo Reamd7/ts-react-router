@@ -7,7 +7,7 @@ export interface IContextType {
   router: {
     history: H.History;
     route: {
-      location: H.Location;
+      readonly location: H.Location;
       match: Imatch<any>;
     };
     staticContext?: {
@@ -26,6 +26,7 @@ export interface IRouteContext {
 }
 interface IContextProp extends React.Props<Context>{
   value: IContextType;
+  ins?:(ref:Context)=>void;
 }
 export class Context extends React.Component<IContextProp, IRouteContext> {
   static Consumer: React.Consumer<IRouteContext> = $.Consumer;
@@ -36,6 +37,9 @@ export class Context extends React.Component<IContextProp, IRouteContext> {
     this.state = {
       data:props.value,
       ref:this
+    }
+    if (this.props.ins){
+      this.props.ins(this)
     }
   }
   public get data() {

@@ -40,7 +40,7 @@ class Router extends React.Component<IRouterProps, IRouterState> {
 	public state: IRouterState;
 	public unlisten: H.UnregisterCallback;
 
-	public ContextRef!: Context; // 组件实例化之后才有
+	public ContextRef: Context; // 组件实例化之后才有
 	public history: H.History;
 	public initContext:IContextType; // 初始化 Context
 
@@ -61,7 +61,7 @@ class Router extends React.Component<IRouterProps, IRouterState> {
 			router: {
 				history: history,
 				route: {
-					location: history.location,
+					get location(){return history.location},
 					match: match
 				}
 			}
@@ -98,11 +98,14 @@ class Router extends React.Component<IRouterProps, IRouterState> {
 
 						const location = history.location;
 						const match = computeMatch(location.pathname);
-						this.ContextRef.update({
+						// 需要注意的是，
+						// 这里的更新除了渲染后用户自定义操作history 外，
+						// 还可能因为Redirect 中的重定向在渲染前被调用。
+						this.ContextRef.update({ 
 							router: {
 								history: history,
 								route: {
-									location: location,
+									get location(){return location},
 									match: match
 								}
 							}
@@ -117,17 +120,17 @@ class Router extends React.Component<IRouterProps, IRouterState> {
 	}
 	public render() {
 		const children = this.props.children;
-
+		/** ins props 优于 ref ,因为ins 是自定义的属性能够在render 之前就将属性定义好， */
 		if (children) {
 			return (
-				<Context value={this.initContext} ref={(context: Context) => {
+				<Context value={this.initContext} ins={(context: Context) => {
 						this.ContextRef = context;
 					}}
 				>{children}</Context>
 			);
 		} else {
 			return (
-				<Context value={this.initContext} ref={(context: Context) => {
+				<Context value={this.initContext} ins={(context: Context) => {
 						this.ContextRef = context;
 					}} />
 			);
@@ -147,7 +150,7 @@ class Router extends React.Component<IRouterProps, IRouterState> {
 			router: {
 				history: history,
 				route: {
-					location: location,
+					get location(){return location},
 					match: match
 				}
 			}

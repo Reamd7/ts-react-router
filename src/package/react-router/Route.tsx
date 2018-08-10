@@ -89,9 +89,9 @@ export class $Route<T extends I$RouteProps = I$RouteProps> extends React.Compone
     // }
     // ==== TEST 测试直接替换。
     if (this.props.location){
-      this.$context.router.route.location = this.props.location // TODO
+      // this.$context.router.route.location = this.props.location // TODO
       this.$context.router.history.location = this.props.location
-      console.log(this.$context)
+      // console.log(this.$context)
     }
     // this.$context.router.route.location = this.props.location || this.$context.router.route.location // TODO
   }
