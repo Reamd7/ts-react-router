@@ -379,7 +379,6 @@ describe("A <Route location>", () => {
             path="/pretzels"
             render={({ history }) => {
               push = history!.push;
-              console.log(history)
               return (
                 <Route
                   path="/pretzels/cheddar"
