@@ -107,7 +107,7 @@ class Router extends React.Component<IRouterProps, IRouterState> {
 								}
 							}
 						});
-						// this.state.match = match // 预留
+						this.state.match = match // 
 					}).bind(this)
 				}else{
 					return el
@@ -152,7 +152,7 @@ class Router extends React.Component<IRouterProps, IRouterState> {
 				}
 			}
 		});
-		// this.state.match = match // 预留
+		nextState.match = match
 	} 
 	public componentWillUnmount() {
 		this.unlisten();

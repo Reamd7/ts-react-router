@@ -30,11 +30,14 @@ interface IContextProp extends React.Props<Context>{
 export class Context extends React.Component<IContextProp, IRouteContext> {
   static Consumer: React.Consumer<IRouteContext> = $.Consumer;
   public props:IContextProp;
-  public state: IRouteContext = {
-    data:this.props.value,
-    ref:this
+  public state: IRouteContext;
+  constructor(props:IContextProp){
+    super(props)
+    this.state = {
+      data:props.value,
+      ref:this
+    }
   }
-
   public get data() {
     return this.state.data;
   }

@@ -9,7 +9,8 @@ export interface IStaticContext {
 }
 export interface IRouteComponentProps< P,C extends IStaticContext = IStaticContext > extends React.Props<any>{
   history?: H.History;
-  location?: H.Location;
+  // location?: H.Location;
+  location?:H.Location
   match?: Imatch<P>;
   staticContext?: C;
 }
@@ -74,6 +75,25 @@ export class $Route<T extends I$RouteProps = I$RouteProps> extends React.Compone
       ),
       "You should not use <Route render> and <Route children> in the same route; <Route children> will be ignored"
     );
+    // ==== 备注 == 由于旧版的context API === 定义的
+    // getChildContext() {
+    //   return {
+    //     router: {
+    //       ...this.context.router,
+    //       route: {
+    //         location: this.props.location || this.context.router.route.location,
+    //         match: this.state.match
+    //       }
+    //     }
+    //   };
+    // }
+    // ==== TEST 测试直接替换。
+    if (this.props.location){
+      this.$context.router.route.location = this.props.location // TODO
+      this.$context.router.history.location = this.props.location
+      console.log(this.$context)
+    }
+    // this.$context.router.route.location = this.props.location || this.$context.router.route.location // TODO
   }
 
   public computeMatch(props: I$RouteProps, router: IRouteContext["data"]["router"]):Imatch<any>|null {
@@ -85,8 +105,8 @@ export class $Route<T extends I$RouteProps = I$RouteProps> extends React.Compone
       "You should not use <Route> or withRouter() outside a <Router>"
     );
 
-    const { route } = router!;
-    const pathname = (location || route!.location).pathname;
+    const { route } = router;
+    const pathname = (location || route.location).pathname;
 
     return matchPath(pathname, { path, strict, exact, sensitive }, route.match);
   }

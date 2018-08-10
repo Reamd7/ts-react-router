@@ -65,29 +65,30 @@ function matchPath<P extends {
   const { re, keys } = compilePath(path, { end: exact, strict, sensitive });
 
   const match = re.exec(pathname);
-  
   if (!match) {
     return null;
   }
   const [url, ...values] = match;
-  const isExact = (pathname === url);
+  const isExact = pathname === url;
 
   if (exact && !isExact){
     return null;
   } 
 
-  const params:{
-    [key:string]:string|number
-    [key:number]:string|number
-  }  = {};
-  keys.forEach((key,index)=>{
-    params[key.name] = values[index];
-  });
   return {
     path, // the path pattern used to match
     url: path === "/" && url === "" ? "/" : url, // the matched portion of the URL
     isExact, // whether or not we matched exactly
-    params:(params as P)
+    params:(()=>{
+      const params:{
+        [key:string]:string|number
+        [key:number]:string|number
+      }  = {};
+      keys.forEach((key,index)=>{
+        params[key.name] = values[index];
+      });
+      return (params as P);
+    })()
   };
 }
 export default matchPath;
