@@ -7,18 +7,10 @@ import { Imatch } from "./matchPath";
 interface IRouterProps extends React.Props<any> {
 	history: H.History;
 	ins?:(ref:Router)=>void
+	staticContext?:IContextType['router']['staticContext']
 }
 interface IRouterState {
 	match: Imatch<any>;
-}
-export interface IRouterChildContext<P> {
-	router: {
-		history: H.History;
-		route: {
-			location: H.Location;
-			match: Imatch<P>;
-		};
-	};
 }
 import { Context, IContextType } from "./context";
 
@@ -46,9 +38,7 @@ class Router extends React.Component<IRouterProps, IRouterState> {
 
 	public constructor(props: IRouterProps) {
 		super(props);
-		if (this.props.ins){
-			this.props.ins(this)
-		}
+		
 		// ============= this.history =================	
 		this.InitHistory(props.history)
 		// ============= this.state =================	
@@ -65,6 +55,9 @@ class Router extends React.Component<IRouterProps, IRouterState> {
 					match: match
 				}
 			}
+		};
+		if (this.props.staticContext){
+			this.initContext.router.staticContext = this.props.staticContext
 		}
 		// ========= $componentWillMount ========
 		const children = props.children;
@@ -82,6 +75,9 @@ class Router extends React.Component<IRouterProps, IRouterState> {
 				match: computeMatch(this.history.location.pathname)
 			});
 		});
+		if (this.props.ins){
+			this.props.ins(this)
+		}
 	}
 	/**
 	 * 这个设计的目的是满足 使用 history 中的方法修改 History 对象时候，组件能够实时修改
@@ -146,7 +142,7 @@ class Router extends React.Component<IRouterProps, IRouterState> {
 		const history = this.history;
 		const location = history.location;
 		const match = computeMatch(location.pathname);
-		this.ContextRef.update({
+		const Context:IContextType = {
 			router: {
 				history: history,
 				route: {
@@ -154,7 +150,11 @@ class Router extends React.Component<IRouterProps, IRouterState> {
 					match: match
 				}
 			}
-		});
+		}
+		if (nextProps.staticContext){
+			Context.router.staticContext = nextProps.staticContext
+		}
+		this.ContextRef.update(Context);
 		nextState.match = match
 	} 
 	public componentWillUnmount() {
