@@ -115,22 +115,12 @@ class Router extends React.Component<IRouterProps, IRouterState> {
 		})
 	}
 	public render() {
-		const children = this.props.children;
 		/** ins props 优于 ref ,因为ins 是自定义的属性能够在render 之前就将属性定义好， */
-		if (children) {
-			return (
-				<Context value={this.initContext} ins={(context: Context) => {
-						this.ContextRef = context;
-					}}
-				>{children}</Context>
-			);
-		} else {
-			return (
-				<Context value={this.initContext} ins={(context: Context) => {
-						this.ContextRef = context;
-					}} />
-			);
-		}
+		return (
+			<Context children={this.props.children} value={this.initContext} ins={(context: Context) => {
+					this.ContextRef = context;
+			}}/>
+		);
 	}
 	public shouldcomponentupdate(nextProps: IRouterProps,nextState:IRouterState) {
 		warning(

@@ -51,7 +51,7 @@ export class $Route<T extends I$RouteProps = I$RouteProps> extends React.Compone
   };
   constructor(props:T){
     super(props);
-    this.props = props;
+
     // ================= componentWillMount ==========
     warning(
       !(this.props.component && this.props.render),
@@ -87,12 +87,14 @@ export class $Route<T extends I$RouteProps = I$RouteProps> extends React.Compone
     //     }
     //   };
     // }
-    // ==== TEST 测试直接替换。
+    // ==== TEST 测试直接替换。=== 
+    // 本质上是替代getChildContext 的作用，但由于没有进行深复制，所以render 下的对象也是共用同一个Context
     if (this.props.location){
       // this.$context.router.route.location = this.props.location // TODO
       this.$context.router.history.location = this.props.location
       // console.log(this.$context)
     }
+    this.$context.router.route.match = this.state.match!
     // this.$context.router.route.location = this.props.location || this.$context.router.route.location // TODO
   }
 

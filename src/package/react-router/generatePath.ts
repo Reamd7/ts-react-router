@@ -35,8 +35,8 @@ const generatePath = (pattern = "/", params: { [paramName: string]: string | num
     return pattern;
   }
   const generator = compileGenerator(pattern);
-  // return generator(params, { pretty: true });
-  return generator(params);
+  return generator(params, { pretty: true } as pathToRegexp.PathFunctionOptions);
+  // return generator(params);
 };
 
 export default generatePath;
