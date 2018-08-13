@@ -13,7 +13,7 @@ export interface IStaticRouterProps {
   basename?: string;
   location?: H.LocationDescriptor;
   context?: IStaticRouterContext;
-  ins?:(ref:StaticRouter)=>void;
+  ins?:(ref:Router)=>void;
 }
 
 const addLeadingSlash = (path:string) => {
@@ -79,9 +79,6 @@ class StaticRouter extends React.Component<IStaticRouterProps, any> {
   public handleReplace: ((location:H.LocationDescriptorObject)=>void)
   constructor(props:IStaticRouterProps){
     super(props);
-    if (props.ins){
-      props.ins(this)
-    }
     const self = this;
     this.createHref = (path:H.LocationDescriptorObject) => addLeadingSlash(self.props.basename + createURL(path));
     this.handlePush = (location:H.LocationDescriptorObject) => {
@@ -128,9 +125,7 @@ class StaticRouter extends React.Component<IStaticRouterProps, any> {
       block: this.handleBlock,
       length:0
     };
-    return <Router {...props} staticContext={context} history={(history as H.History)} ins={(ref:Router)=>{
-      this.routerRef = ref;
-    }}/>;
+    return <Router {...props} staticContext={context} history={(history as H.History)} ins={this.props.ins}/>;
   }
   // =================================================
 

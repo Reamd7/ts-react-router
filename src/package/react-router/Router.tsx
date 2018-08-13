@@ -14,7 +14,7 @@ interface IRouterState {
 }
 import { Context, IContextType } from "./context";
 
-function computeMatch(pathname: string): Imatch<any> {
+export function computeMatch(pathname: string): Imatch<any> {
 	return {
 		path: "/",
 		url: "/",
